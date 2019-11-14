@@ -26,7 +26,7 @@ class ReplayBuffer:
     
     
 class Agent:
-    def __init__(self, state_size, batch_size, is_eval = False):
+    def __init__(self, state_size, batch_size, budget, is_eval = False):
         self.state_size = state_size
         self.action_size = 3
         self.buffer_size = 1000000
@@ -46,6 +46,8 @@ class Agent:
         
         self.critic_target.model.set_weights(self.critic_local.model.get_weights()) 
         self.actor_target.model.set_weights(self.actor_local.model.get_weights())
+
+        self.budget=budget
         
     def act(self, state):
         options = self.actor_local.model.predict(state)
