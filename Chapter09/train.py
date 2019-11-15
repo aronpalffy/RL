@@ -71,11 +71,17 @@ for e in range(episode_count):
                 #print("Buget is: " + formatPrice(agent.budget))
                 #print("day " + row.date)
             else:
+                """
                 print("Date: " + row.date)
                 print("Can not buy.")
                 print("Price is: " + formatPrice(closePrice))
                 print("Buget is: " + formatPrice(agent.budget))
-                done = True
+                """
+                # nothing to sell
+                if(len(agent.inventory) == 0):
+                    print("Date: " + row.date)
+                    print("Out of budget, terminating episode")
+                    done = True
 
         elif action == 2 and len(agent.inventory) > 0:
             bought_price = agent.inventory.pop(0)
