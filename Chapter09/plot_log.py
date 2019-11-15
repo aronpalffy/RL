@@ -32,7 +32,7 @@ def savePlot(file):
     # plot results
     plt.subplot(212)
     plt.title("Budget")
-    maxLines = 10
+    maxLines = 30
 
     legendColors = []
     # iterating the columns
@@ -51,4 +51,4 @@ def savePlot(file):
     # plt.show()
 
 
-savePlot("training_log/2019-11-15 13:53:46_training.csv")
+savePlot("training_log/2019-11-15 15:53:47_training.csv")
