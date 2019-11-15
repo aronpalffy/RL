@@ -1,54 +1,34 @@
 from agent import Agent
-from helper import getStockData, getState, formatPrice, getFullData
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
+from helper import getStockData, getState, formatPrice, getFullData, logTrainingResults, assembleFileName
+
 import numpy as np
 from data_row import DataRow
 import datetime
 
-
-def getTimestamp():
-    now = datetime.datetime.now()
-    time_now = now.strftime("%Y-%m-%d %H:%M:%S")
-    return time_now
-
-
-def assembleFileName(name, format):
-    filename = getTimestamp() + "_" + name + format
-    return filename
-
-
-def graph(dates, priceTrend, budgetTrend, episodeNo):
-
-    plt.subplot(211)
-    plt.plot(dates, priceTrend, '-')
-    plt.xticks([])
-    plt.title('Price')
-
-    plt.subplot(212)
-    plt.plot(dates, budgetTrend, '-')
-    plt.xticks([])
-    plt.title('Budget')
-
-    plt.savefig(assembleFileName("Episode_%i" % (episodeNo), ".png"))
-    return None
-
-
 window_size = 50
 batch_size = 32
 startBudget = 10000
+episode_count = 300
 
 agent = Agent(window_size, batch_size, startBudget)
-data = getStockData("^GSPC Test")
-fullData = getFullData("^GSPC Test")
-l = len(data) - 1
-episode_count = 1
 
+trainingFile = "data/^GSPC.csv"
+testFile = "data/^GSPC Test.csv"
+logFile = "training_log/" + assembleFileName("training", ".csv")
+
+data = getStockData(trainingFile)
+fullData = getFullData(trainingFile)
+l = len(data) - 1
+
+durations = []
+trainingStart = datetime.datetime.now()
 for e in range(episode_count):
+    episodeStart = datetime.datetime.now()
     print("Episode " + str(e) + "/" + str(episode_count))
     state = getState(data, 0, window_size + 1)
 
     agent.inventory = []
+    agent.budget = startBudget
     total_profit = 0
     done = False
 
@@ -95,6 +75,7 @@ for e in range(episode_count):
                 print("Can not buy.")
                 print("Price is: " + formatPrice(closePrice))
                 print("Buget is: " + formatPrice(agent.budget))
+                done = True
 
         elif action == 2 and len(agent.inventory) > 0:
             bought_price = agent.inventory.pop(0)
@@ -112,11 +93,25 @@ for e in range(episode_count):
             print("------------------------------------------")
             print("Total Profit: " + formatPrice(total_profit))
             print("------------------------------------------")
+            break  # break out of training episode
 
     #graph(dateHistory, priceHistory, budgetHistory, e)
+    logTrainingResults(logFile, trainingFile, budgetHistory, e)
+    episodeEnd = datetime.datetime.now()
+    duration = episodeEnd-episodeStart
+    print(duration.total_seconds())
+    durations.append(duration.total_seconds())
+if True:
+    avgDuration = sum(durations) / len(durations)
+    print("Avg episode Duration: ", avgDuration)
+    trainingEnd = datetime.datetime.now()
+    trainingDuration = trainingEnd-trainingStart
+    print("Training duration: ", trainingDuration)
+    print("skipping TEST")
+    import sys
+    sys.exit()
 
-
-test_data = getStockData("^GSPC Test")
+test_data = getStockData(testFile)
 l_test = len(test_data) - 1
 state = getState(test_data, 0, window_size + 1)
 total_profit = 0

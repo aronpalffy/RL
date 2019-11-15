@@ -5,6 +5,22 @@ from data_row import DataRow
 import csv
 import os.path
 
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+import datetime
+
+from itertools import chain, repeat, islice
+
+
+def pad_infinite(iterable, padding=None):
+    return chain(iterable, repeat(padding))
+
+
+def pad(iterable, size, padding=None):
+    return islice(pad_infinite(iterable, padding), size)
+
+#from plot_log import savePlot
+
 
 def formatPrice(n):
     if n >= 0:
@@ -14,9 +30,9 @@ def formatPrice(n):
     return curr + "{0:.2f}".format(abs(n))
 
 
-def getStockData(key):
+def getStockData(file):
     datavec = []
-    lines = open("data/" + key + ".csv", "r").read().splitlines()
+    lines = open(file, "r").read().splitlines()
 
     for line in lines[1:]:
         datavec.append(float(line.split(",")[4]))
@@ -24,9 +40,9 @@ def getStockData(key):
     return datavec
 
 
-def getFullData(key):
+def getFullData(file):
     datavec = []
-    lines = open("data/" + key + ".csv", "r").read().splitlines()
+    lines = open(file, "r").read().splitlines()
 
     for line in lines[1:]:
         rawData = line.split(",")
@@ -50,6 +66,24 @@ def getState(data, t, window):
 
 
 def logTrainingResults(logFile, trainingFile, results, episodeNo):
+
+    # fix length of results by padding with lastKnownResult...
+    # necessary for now
+    # because the training skips the last day.
+    # also if training episode fails due to lack of funds
+
+    lastKnownResult = results[len(results)-1]
+    with open(trainingFile, 'r') as csvfile:
+        csvreader = csv.reader(csvfile)
+
+        fields = next(csvreader)
+        fields = []
+        rows = []
+        for row in csvreader:
+            rows.append(row)
+
+        results = list(pad(results, len(rows), lastKnownResult))
+
     # if no log is present yet
     # create copy of training data, and add results
     if(not os.path.exists(logFile)):
@@ -65,7 +99,7 @@ def logTrainingResults(logFile, trainingFile, results, episodeNo):
             for row in csvreader:
                 rows.append(row)
 
-        fields.append(episodeNo)
+        fields.append("Episode 0")
 
         rows = addResults(rows, results)
 
@@ -87,7 +121,7 @@ def logTrainingResults(logFile, trainingFile, results, episodeNo):
             for row in csvreader:
                 rows.append(row)
 
-        fields.append(episodeNo)
+        fields.append("Episode {}".format(episodeNo))
 
         rows = addResults(rows, results)
 
@@ -95,6 +129,8 @@ def logTrainingResults(logFile, trainingFile, results, episodeNo):
             csvwriter = csv.writer(csvfile)
             csvwriter.writerow(fields)
             csvwriter.writerows(rows)
+
+    # savePlot(logFile)
 
 
 def addResults(origContent, newContent):
@@ -106,5 +142,32 @@ def addResults(origContent, newContent):
         nC = newContent[i]
         oC.append(nC)
         addedContent.append(oC)
-        print("content ", oC)
+        #print("content ", oC)
     return addedContent
+
+
+def getTimestamp():
+    now = datetime.datetime.now()
+    time_now = now.strftime("%Y-%m-%d %H:%M:%S")
+    return time_now
+
+
+def assembleFileName(name, format):
+    filename = getTimestamp() + "_" + name + format
+    return filename
+
+
+def graph(dates, priceTrend, budgetTrend, episodeNo):
+
+    plt.subplot(211)
+    plt.plot(dates, priceTrend, '-')
+    plt.xticks([])
+    plt.title('Price')
+
+    plt.subplot(212)
+    plt.plot(dates, budgetTrend, '-')
+    plt.xticks([])
+    plt.title('Budget')
+
+    plt.savefig(assembleFileName("Episode_%i" % (episodeNo), ".png"))
+    return None
