@@ -21,6 +21,7 @@ fullData = getFullData(trainingFile)
 l = len(data) - 1
 
 durations = []
+failedEpisodes = []
 trainingStart = datetime.datetime.now()
 for e in range(episode_count):
     episodeStart = datetime.datetime.now()
@@ -81,6 +82,7 @@ for e in range(episode_count):
                 if(len(agent.inventory) == 0):
                     print("Date: " + row.date)
                     print("Out of budget, terminating episode")
+                    failedEpisodes.append(e)
                     done = True
 
         elif action == 2 and len(agent.inventory) > 0:
@@ -113,6 +115,8 @@ if True:
     trainingEnd = datetime.datetime.now()
     trainingDuration = trainingEnd-trainingStart
     print("Training duration: ", trainingDuration)
+    print("{0} episodes failed out of {1}".format(len(failedEpisodes), episode_count))
+    print(failedEpisodes)
     print("skipping TEST")
     import sys
     sys.exit()
