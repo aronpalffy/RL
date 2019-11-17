@@ -5,7 +5,7 @@ import numpy as np
 from data_row import DataRow
 import datetime
 
-window_size = 50
+window_size = (50, 4)
 batch_size = 32
 startBudget = 10000
 episode_count = 300
@@ -26,7 +26,7 @@ trainingStart = datetime.datetime.now()
 for e in range(episode_count):
     episodeStart = datetime.datetime.now()
     print("Episode " + str(e) + "/" + str(episode_count))
-    state = getState(data, 0, window_size + 1)
+    state = getState(data, 0, window_size[0] + 1)
 
     agent.inventory = []
     agent.budget = startBudget
@@ -39,7 +39,7 @@ for e in range(episode_count):
 
     for t in range(l):
 
-        closePrice = data[t]
+        closePrice = data[t][3]
 
         row = fullData[t]
 
@@ -62,7 +62,7 @@ for e in range(episode_count):
         action = agent.act(state)
         action_prob = agent.actor_local.model.predict(state)
 
-        next_state = getState(data, t + 1, window_size + 1)
+        next_state = getState(data, t + 1, window_size[0] + 1)
         reward = 0
 
         if action == 1:
@@ -123,7 +123,7 @@ if True:
 
 test_data = getStockData(testFile)
 l_test = len(test_data) - 1
-state = getState(test_data, 0, window_size + 1)
+state = getState(test_data, 0, window_size[0] + 1)
 total_profit = 0
 agent.inventory = []
 agent.budget = startBudget
@@ -132,7 +132,7 @@ done = False
 for t in range(l_test):
     action = agent.act(state)
 
-    next_state = getState(test_data, t + 1, window_size + 1)
+    next_state = getState(test_data, t + 1, window_size[0] + 1)
     reward = 0
 
     if action == 1:

@@ -35,7 +35,12 @@ def getStockData(file):
     lines = open(file, "r").read().splitlines()
 
     for line in lines[1:]:
-        datavec.append(float(line.split(",")[4]))
+        datavec_row = []
+        datavec_row.append(float(line.split(",")[1]))
+        datavec_row.append(float(line.split(",")[2]))
+        datavec_row.append(float(line.split(",")[3]))
+        datavec_row.append(float(line.split(",")[4]))
+        datavec.append(datavec_row)
 
     return datavec
 
@@ -52,17 +57,24 @@ def getFullData(file):
 
     return datavec
 
-
 def getState(data, t, window):
     if t - window >= -1:
         vec = data[t - window + 1:t + 1]
     else:
         vec = -(t-window+1)*[data[0]]+data[0: t + 1]
     scaled_state = []
-    for i in range(window - 1):
-        scaled_state.append(1/(1 + math.exp(vec[i] - vec[i+1])))
 
-    return np.array([scaled_state])
+    for i in range(4):
+        scaled_state_column = []
+        col = column(vec, i)
+        for j in range(window - 1):
+            scaled_state_column.append(1 / (1 + math.exp(col[i] - col[i + 1])))
+        scaled_state.append(scaled_state_column)
+    return np.array(scaled_state).transpose().reshape(1, 50, 4)
+
+
+def column(matrix, i):
+    return [row[i] for row in matrix]
 
 
 def logTrainingResults(logFile, trainingFile, results, episodeNo):
@@ -148,7 +160,7 @@ def addResults(origContent, newContent):
 
 def getTimestamp():
     now = datetime.datetime.now()
-    time_now = now.strftime("%Y-%m-%d %H:%M:%S")
+    time_now = now.strftime("%Y-%m-%d %H-%M-%S")
     return time_now
 
 
