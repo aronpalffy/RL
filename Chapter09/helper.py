@@ -29,6 +29,8 @@ def formatPrice(n):
         curr = "-$"
     return curr + "{0:.2f}".format(abs(n))
 
+def formatBudget(n):
+    return "{0:.2f}".format(abs(n))
 
 def getStockData(file):
     datavec = []
@@ -64,6 +66,12 @@ def getState(data, t, window):
 
     return np.array([scaled_state])
 
+def logValidationResults(logFile, results):
+    headers=["Date", "Budget", "Buy/Sell", "Profit", "Reward"]
+    with open(logFile, 'w') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerow(headers)
+        csvwriter.writerows(results)
 
 def logTrainingResults(logFile, trainingFile, results, episodeNo):
 
@@ -156,6 +164,10 @@ def assembleFileName(name, format):
     filename = getTimestamp() + "_" + name + format
     return filename
 
+def assembleValidationFileName(name, episodeNo, format):
+    index = name.find(format)
+    filename = name[:index] + "_validation_{}".format(episodeNo) + format
+    return filename
 
 def graph(dates, priceTrend, budgetTrend, episodeNo):
 
