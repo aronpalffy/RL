@@ -148,7 +148,7 @@ def addResults(origContent, newContent):
 
 def getTimestamp():
     now = datetime.datetime.now()
-    time_now = now.strftime("%Y-%m-%d %H:%M:%S")
+    time_now = now.strftime("%Y-%m-%d %H-%M-%S")
     return time_now
 
 
@@ -171,3 +171,10 @@ def graph(dates, priceTrend, budgetTrend, episodeNo):
 
     plt.savefig(assembleFileName("Episode_%i" % (episodeNo), ".png"))
     return None
+
+def save_validation(result):
+    with open("data/validation_result.csv", 'w+') as csvfile:
+        csvwriter = csv.writer(csvfile)
+        csvwriter.writerow(result)
+        # csvwriter.writerow('\n')
+

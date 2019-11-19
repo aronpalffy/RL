@@ -1,9 +1,61 @@
 from agent import Agent
-from helper import getStockData, getState, formatPrice, getFullData, logTrainingResults, assembleFileName
+from helper import getStockData, getState, formatPrice, getFullData, logTrainingResults, assembleFileName, save_validation
 
 import numpy as np
 from data_row import DataRow
 import datetime
+
+validatondata = []
+def runValidation():
+    global state, total_profit, done, t, action, next_state, reward, bought_price
+    test_data = getStockData(testFile)
+    l_test = len(test_data) - 1
+    state = getState(test_data, 0, window_size + 1)
+    total_profit = 0
+    agent.inventory = []
+    agent.budget = startBudget
+    agent.is_eval = False
+    done = False
+    all_period = 0
+    plus_period = 0
+    validation_row = []
+    for t in range(l_test):
+        action = agent.act(state)
+
+        next_state = getState(test_data, t + 1, window_size + 1)
+        reward = 0
+
+        if action == 1:
+
+            agent.inventory.append(test_data[t])
+            # print("Buy: " + formatPrice(test_data[t]))
+
+        elif action == 2 and len(agent.inventory) > 0:
+            bought_price = agent.inventory.pop(0)
+            reward = max(test_data[t] - bought_price, 0)
+            total_profit += test_data[t] - bought_price
+            # print("Sell: " + formatPrice(test_data[t]) +
+            #       " | profit: " + formatPrice(test_data[t] - bought_price))
+            if test_data[t] - bought_price > 0:
+                plus_period += 1
+            all_period += 1
+
+        if t == l_test - 1:
+            done = True
+        agent.step(action_prob, reward, next_state, done)
+        state = next_state
+
+        if done:
+            # print("------------------------------------------")
+            print("Total validation Profit: " + formatPrice(total_profit))
+
+            validation_row.append(total_profit)
+            validation_row.append(plus_period)
+            validation_row.append(all_period)
+            # print("------------------------------------------")
+
+            validatondata.append(validation_row)
+
 
 window_size = 50
 batch_size = 32
@@ -109,6 +161,12 @@ for e in range(episode_count):
     duration = episodeEnd-episodeStart
     print(duration.total_seconds())
     durations.append(duration.total_seconds())
+    if e%2 == 0:
+        print("Call validation")
+        runValidation()
+
+save_validation(validatondata)
+
 if True:
     avgDuration = sum(durations) / len(durations)
     print("Avg episode Duration: ", avgDuration)
@@ -121,38 +179,3 @@ if True:
     import sys
     sys.exit()
 
-test_data = getStockData(testFile)
-l_test = len(test_data) - 1
-state = getState(test_data, 0, window_size + 1)
-total_profit = 0
-agent.inventory = []
-agent.budget = startBudget
-agent.is_eval = False
-done = False
-for t in range(l_test):
-    action = agent.act(state)
-
-    next_state = getState(test_data, t + 1, window_size + 1)
-    reward = 0
-
-    if action == 1:
-
-        agent.inventory.append(test_data[t])
-        print("Buy: " + formatPrice(test_data[t]))
-
-    elif action == 2 and len(agent.inventory) > 0:
-        bought_price = agent.inventory.pop(0)
-        reward = max(test_data[t] - bought_price, 0)
-        total_profit += test_data[t] - bought_price
-        print("Sell: " + formatPrice(test_data[t]) +
-              " | profit: " + formatPrice(test_data[t] - bought_price))
-
-    if t == l_test - 1:
-        done = True
-    agent.step(action_prob, reward, next_state, done)
-    state = next_state
-
-    if done:
-        print("------------------------------------------")
-        print("Total Profit: " + formatPrice(total_profit))
-        print("------------------------------------------")
