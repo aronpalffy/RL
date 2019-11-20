@@ -3,6 +3,7 @@ import math
 from data_row import DataRow
 
 import csv
+import os
 import os.path
 
 import matplotlib.pyplot as plt
@@ -29,8 +30,10 @@ def formatPrice(n):
         curr = "-$"
     return curr + "{0:.2f}".format(abs(n))
 
+
 def formatBudget(n):
     return "{0:.2f}".format(abs(n))
+
 
 def getStockData(file):
     datavec = []
@@ -66,12 +69,14 @@ def getState(data, t, window):
 
     return np.array([scaled_state])
 
+
 def logValidationResults(logFile, results):
-    headers=["Date", "Budget", "Buy/Sell", "Profit", "Reward"]
+    headers = ["Date", "Budget", "Buy/Sell", "Profit", "Reward"]
     with open(logFile, 'w') as csvfile:
         csvwriter = csv.writer(csvfile)
         csvwriter.writerow(headers)
         csvwriter.writerows(results)
+
 
 def logTrainingResults(logFile, trainingFile, results, episodeNo):
 
@@ -156,18 +161,26 @@ def addResults(origContent, newContent):
 
 def getTimestamp():
     now = datetime.datetime.now()
-    time_now = now.strftime("%Y-%m-%d %H_%M_%S")
+    time_now = now.strftime("%Y-%m-%d_%H-%M-%S")
     return time_now
 
 
+def createLogDirectory(path):
+    new_path = path + "/" + getTimestamp() + "/"
+    os.mkdir(new_path)
+    return new_path
+
+
 def assembleFileName(name, format):
-    filename = getTimestamp() + "_" + name + format
+    filename = name + format
     return filename
+
 
 def assembleValidationFileName(name, episodeNo, format):
     index = name.find(format)
     filename = name[:index] + "_validation_{}".format(episodeNo) + format
     return filename
+
 
 def graph(dates, priceTrend, budgetTrend, episodeNo):
 

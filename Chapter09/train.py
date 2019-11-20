@@ -1,5 +1,5 @@
 from agent import Agent
-from helper import getStockData, getState, formatPrice, formatBudget, getFullData, logTrainingResults, logValidationResults, assembleFileName, assembleValidationFileName
+from helper import getStockData, getState, formatPrice, formatBudget, getFullData, logTrainingResults, logValidationResults, assembleFileName, assembleValidationFileName, createLogDirectory
 
 import numpy as np
 from data_row import DataRow
@@ -11,19 +11,22 @@ import logging
 trainingFile = "data/2008_2016_^GSPC.csv"
 validationFile = "data/2017_^GSPC.csv"
 testFile = "data/2018_^GSPC Test.csv"
-logFile = "training_log/" + assembleFileName("training", ".csv")
-log = "training_log/" + assembleFileName("log", ".log")
+
+logDirectory = createLogDirectory("training_log")
+logFile =  logDirectory + assembleFileName("training", ".csv")
+log = logDirectory + assembleFileName("log", ".log")
 
 
 # Gets or creates a logger
-logger = logging.getLogger(__name__)  
+logger = logging.getLogger(__name__)
 
 # set log level
 logger.setLevel(logging.DEBUG)
 
 # define file handler and set formatter
 file_handler = logging.FileHandler(log)
-formatter    = logging.Formatter('%(asctime)s : %(levelname)s : %(name)s : %(message)s')
+formatter = logging.Formatter(
+    '%(asctime)s : %(levelname)s : %(name)s : %(message)s')
 file_handler.setFormatter(formatter)
 
 # add file handler to logger
@@ -32,7 +35,7 @@ logger.addHandler(file_handler)
 window_size = 50
 batch_size = 32
 startBudget = 10000
-episode_count = 101
+episode_count = 301
 validateEvery = 10
 
 agent = Agent(window_size, batch_size, startBudget)
@@ -67,7 +70,7 @@ def validate(episodeNo):
 
         validationDataRow = fullData[t]
         #["Date", "Budget", "Buy/Sell", "Profit", "Reward"]
-        validationResult = [validationDataRow.date,"","","",0]
+        validationResult = [validationDataRow.date, "", "", "", 0]
 
         closePrice = validation_data[t]
 
@@ -75,9 +78,9 @@ def validate(episodeNo):
             if closePrice < agent.budget:
                 agent.inventory.append(closePrice)
                 #agent.budget -= closePrice
-                validationResult[2]= "Buy"
+                validationResult[2] = "Buy"
                 #logger.debug("Buy: " + formatPrice(closePrice))
-            elif(len(agent.inventory) == 0): 
+            elif(len(agent.inventory) == 0):
                 # nothing to sell
                 logger.debug("Date: " + row.date)
                 logger.debug("Out of budget, terminating validation")
@@ -88,13 +91,13 @@ def validate(episodeNo):
             profit = closePrice - bought_price
             total_profit += profit
             agent.budget += profit
-            validationResult[2]= "Sell"
-            validationResult[3]= formatBudget(profit)
-            validationResult[4]= reward
-            #logger.debug("Sell: " + formatPrice(closePrice) +
+            validationResult[2] = "Sell"
+            validationResult[3] = formatBudget(profit)
+            validationResult[4] = reward
+            # logger.debug("Sell: " + formatPrice(closePrice) +
             #   " | profit: " + formatPrice(closePrice - bought_price))
 
-        validationResult[1]= formatBudget(agent.budget)
+        validationResult[1] = formatBudget(agent.budget)
         validationResults.append(validationResult)
         if t == l_validation - 1:
             done = True
@@ -104,9 +107,11 @@ def validate(episodeNo):
         if done:
             logValidationResults(validationLogFile, validationResults)
             logger.debug("------------------------------------------")
-            logger.debug("Total Profit of Validation: " + formatPrice(total_profit))
+            logger.debug("Total Profit of Validation: " +
+                         formatPrice(total_profit))
             logger.debug("------------------------------------------")
             break  # break out of validation
+
 
 # TRAINING
 durations = []
@@ -137,7 +142,7 @@ for e in range(episode_count):
         row = fullData[t]
 
         budgetHistory.append(formatBudget(agent.budget))
-               
+
         action = agent.act(state)
         action_prob = agent.actor_local.model.predict(state)
 
@@ -147,7 +152,7 @@ for e in range(episode_count):
         if action == 1:
             if closePrice < agent.budget:
                 agent.inventory.append(closePrice)
-                #agent.budget-=closePrice
+                # agent.budget-=closePrice
                 # logger.debug("Buy. Price is " + formatPrice(closePrice)
                 #logger.debug("Buget is: " + formatPrice(agent.budget))
                 #logger.debug("day " + row.date)
@@ -191,7 +196,8 @@ for e in range(episode_count):
     trainingDuration = episodeEnd-trainingStart
 
     logger.debug("episodeDuration {}".format(episodeDuration.total_seconds()))
-    logger.debug("trainingDuration {}".format(trainingDuration.total_seconds()))
+    logger.debug("trainingDuration {}".format(
+        trainingDuration.total_seconds()))
     logger.debug("")
 
     if e % validateEvery == 0:
@@ -202,9 +208,10 @@ if True:
     logger.debug("Avg episode Duration: ", avgDuration)
     trainingEnd = datetime.datetime.now()
     trainingDuration = trainingEnd-trainingStart
-    logger.debug("Training duration: ", trainingDuration)
-    logger.debug("{0} episodes failed out of {1}".format(len(failedEpisodes), episode_count))
-    #logger.debug(failedEpisodes)
+    logger.debug("Training duration: {}".format(str(trainingDuration)))
+    logger.debug("{0} episodes failed out of {1}".format(
+        len(failedEpisodes), episode_count))
+    # logger.debug(failedEpisodes)
     logger.debug("skipping TEST")
     import sys
     sys.exit()
@@ -233,7 +240,7 @@ for t in range(l_test):
         reward = max(test_data[t] - bought_price, 0)
         total_profit += test_data[t] - bought_price
         logger.debug("Sell: " + formatPrice(test_data[t]) +
-              " | profit: " + formatPrice(test_data[t] - bought_price))
+                     " | profit: " + formatPrice(test_data[t] - bought_price))
 
     if t == l_test - 1:
         done = True
