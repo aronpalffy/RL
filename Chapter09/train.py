@@ -13,7 +13,7 @@ validationFile = "data/2017_^GSPC.csv"
 testFile = "data/2018_^GSPC Test.csv"
 
 logDirectory = createLogDirectory("training_log")
-logFile =  logDirectory + assembleFileName("training", ".csv")
+logFile = logDirectory + assembleFileName("training", ".csv")
 log = logDirectory + assembleFileName("log", ".log")
 
 
@@ -197,7 +197,7 @@ for e in range(episode_count):
 
     logger.debug("episodeDuration {}".format(episodeDuration.total_seconds()))
     logger.debug("trainingDuration {}".format(
-        trainingDuration.total_seconds()))
+        trainingDuration))
     logger.debug("")
 
     if e % validateEvery == 0:
@@ -207,8 +207,9 @@ if True:
     avgDuration = sum(durations) / len(durations)
     logger.debug("Avg episode Duration: ", avgDuration)
     trainingEnd = datetime.datetime.now()
-    trainingDuration = trainingEnd-trainingStart
-    logger.debug("Training duration: {}".format(str(trainingDuration)))
+    totalTrainingDuration = trainingEnd-trainingStart
+    logger.debug("Total training duration: {}".format(
+        str(totalTrainingDuration)))
     logger.debug("{0} episodes failed out of {1}".format(
         len(failedEpisodes), episode_count))
     # logger.debug(failedEpisodes)
