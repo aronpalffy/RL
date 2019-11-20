@@ -1,6 +1,7 @@
 import numpy as np
 import math
 from data_row import DataRow
+from sklearn import preprocessing
 
 import csv
 import os
@@ -60,18 +61,27 @@ def getFullData(file):
 
 def getState(data, t, window, budgetHistory = []):
     if t - window >= -1:
-        vec = data[t - window + 1:t + 1]
-        budget_vec = budgetHistory[t - window + 1:t + 1]
+        vec = data[t - window+1:t]
+        budget_vec = budgetHistory[t - window+1:t]
     else:
-        vec = -(t-window+1)*[data[0]]+data[0: t + 1]
-        budget_vec = -(t-window+1)*[budgetHistory[0]]+budgetHistory[0: t + 1]
+        vec = -(t-window+1)*[data[0]]+data[0: t]
+        budget_vec = -(t-window+1)*[budgetHistory[0]]+budgetHistory[0: t]
     scaled_state = []
     budget_scaled_state = []
-    for i in range(window - 1):
-        scaled_state.append(1/(1 + math.exp(vec[i] - vec[i+1])))
-        budget_scaled_state.append(1/(1 + math.exp(round(budget_vec[i], 5) - round(budget_vec[i+1], 5))))
+    # for i in range(window - 1):
+    #     scaled_state.append(1/(1 + math.exp(vec[i] - vec[i+1])))
+    #     try:
+    #         # budget_scaled_state.append(1/(1 + math.exp(round(budget_vec[i], 5) - round(budget_vec[i+1], 5))))
+    #         budget_scaled_state = preprocessing.normalize(budget_vec, norm='l2')
+    #     except:
+    #         print("OverflowError: math range error")
+    #         print(str(round(budget_vec[i], 5)))
+    #         print(str(round(budget_vec[i+1], 5)))
+    #         print(str(math.exp(round(budget_vec[i], 5) - round(budget_vec[i+1], 5))))
+    #         print(str(1/(1 + math.exp(round(budget_vec[i], 5) - round(budget_vec[i+1], 5)))))
 
-    return np.array([scaled_state, budget_scaled_state]).reshape(1, 2, 50)
+    # return np.array([scaled_state, budget_scaled_state]).reshape(1, 2, 50)
+    return preprocessing.normalize(np.array([vec, budget_vec])).reshape(1, 2, 50)
 
 
 def logValidationResults(logFile, results):
