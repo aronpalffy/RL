@@ -32,11 +32,11 @@ file_handler.setFormatter(formatter)
 # add file handler to logger
 logger.addHandler(file_handler)
 
-window_size = 50
+window_size = (2, 50)
 batch_size = 32
 startBudget = 10000
-episode_count = 301
-validateEvery = 10
+episode_count = 30
+validateEvery = 5
 
 agent = Agent(window_size, batch_size, startBudget)
 
@@ -55,17 +55,21 @@ def validate(episodeNo):
     fullData = getFullData(validationFile)
     validation_data = getStockData(validationFile)
     l_validation = len(validation_data) - 1
-    state = getState(validation_data, 0, window_size + 1)
     total_profit = 0
     agent.inventory = []
     agent.budget = startBudget
     agent.is_eval = False
     done = False
     validationResults = []
+    budgetHistory = []
+    budgetHistory.append(startBudget)
+    state = getState(validation_data, 0, window_size[1] + 1, budgetHistory)
     for t in range(l_validation):
         action = agent.act(state)
 
-        next_state = getState(validation_data, t + 1, window_size + 1)
+        budgetHistory.append(float(formatBudget(agent.budget)))
+
+        next_state = getState(validation_data, t + 1, window_size[1] + 1, budgetHistory)
         reward = 0
 
         validationDataRow = fullData[t]
@@ -124,7 +128,6 @@ for e in range(episode_count):
     episodeStart = datetime.datetime.now()
     logger.debug("*******************")
     logger.debug("Episode " + str(e) + "/" + str(episode_count))
-    state = getState(data, 0, window_size + 1)
 
     agent.inventory = []
     agent.budget = startBudget
@@ -135,18 +138,22 @@ for e in range(episode_count):
     budgetHistory = []
     priceHistory = []
 
+    budgetHistory.append(startBudget)
+
+    state = getState(data, 0, window_size[1] + 1, budgetHistory)
+
     for t in range(l):
 
         closePrice = data[t]
 
         row = fullData[t]
 
-        budgetHistory.append(formatBudget(agent.budget))
+        budgetHistory.append(float(formatBudget(agent.budget)))
 
         action = agent.act(state)
         action_prob = agent.actor_local.model.predict(state)
 
-        next_state = getState(data, t + 1, window_size + 1)
+        next_state = getState(data, t + 1, window_size[1] + 1, budgetHistory)
         reward = 0
 
         if action == 1:
@@ -205,7 +212,7 @@ for e in range(episode_count):
     durations.append(episodeDuration.total_seconds())
 if True:
     avgDuration = sum(durations) / len(durations)
-    logger.debug("Avg episode Duration: ", avgDuration)
+    # logger.debug("Avg episode Duration: ", str(avgDuration))
     trainingEnd = datetime.datetime.now()
     totalTrainingDuration = trainingEnd-trainingStart
     logger.debug("Total training duration: {}".format(
@@ -219,7 +226,7 @@ if True:
 
 test_data = getStockData(testFile)
 l_test = len(test_data) - 1
-state = getState(test_data, 0, window_size + 1)
+state = getState(test_data, 0, window_size[1] + 1)
 total_profit = 0
 agent.inventory = []
 agent.budget = startBudget
@@ -228,7 +235,7 @@ done = False
 for t in range(l_test):
     action = agent.act(state)
 
-    next_state = getState(test_data, t + 1, window_size + 1)
+    next_state = getState(test_data, t + 1, window_size[1] + 1)
     reward = 0
 
     if action == 1:

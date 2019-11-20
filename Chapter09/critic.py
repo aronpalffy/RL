@@ -20,7 +20,7 @@ class Critic:
     def build_model(self):
         """Build a critic (value) network that maps (state, action) pairs -> Q-values."""
         # Define input layers
-        states = layers.Input(shape=(self.state_size,), name='states')
+        states = layers.Input(shape=(self.state_size[0], self.state_size[1]), name='states')
         actions = layers.Input(shape=(self.action_size,), name='actions')
 
         net_states = layers.Dense(units=16,kernel_regularizer=layers.regularizers.l2(1e-6))(states)
@@ -33,6 +33,8 @@ class Critic:
 
         net = layers.Add()([net_states, net_actions])
         net = layers.Activation('relu')(net)
+
+        net = layers.Flatten()(net)
 
         Q_values = layers.Dense(units=1, name='q_values',kernel_initializer=layers.initializers.RandomUniform(minval=-0.003, maxval=0.003))(net)
 

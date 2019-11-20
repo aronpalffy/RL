@@ -64,11 +64,11 @@ class Agent:
             self.last_state = next_state
 
     def learn(self, experiences):               
-        states = np.vstack([e.state for e in experiences if e is not None]).astype(np.float32).reshape(-1,self.state_size)    
+        states = np.vstack([e.state for e in experiences if e is not None]).astype(np.float32).reshape(-1,self.state_size[0], self.state_size[1])
         actions = np.vstack([e.action for e in experiences if e is not None]).astype(np.float32).reshape(-1,self.action_size)
         rewards = np.array([e.reward for e in experiences if e is not None]).astype(np.float32).reshape(-1,1)
         dones = np.array([e.done for e in experiences if e is not None]).astype(np.float32).reshape(-1,1)
-        next_states = np.vstack([e.next_state for e in experiences if e is not None]).astype(np.float32).reshape(-1,self.state_size)
+        next_states = np.vstack([e.next_state for e in experiences if e is not None]).astype(np.float32).reshape(-1,self.state_size[0], self.state_size[1])
 
         actions_next = self.actor_target.model.predict_on_batch(next_states)
         Q_targets_next = self.critic_target.model.predict_on_batch([next_states, actions_next])

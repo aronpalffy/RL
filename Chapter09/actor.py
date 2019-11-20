@@ -15,7 +15,7 @@ class Actor:
         self.build_model()
 
     def build_model(self):
-        states = layers.Input(shape=(self.state_size,), name='states')
+        states = layers.Input(shape=(self.state_size[0],self.state_size[1]), name='states')
         
         net = layers.Dense(units=16,kernel_regularizer=layers.regularizers.l2(1e-6))(states)
         net = layers.BatchNormalization()(net)
@@ -23,6 +23,8 @@ class Actor:
         net = layers.Dense(units=32,kernel_regularizer=layers.regularizers.l2(1e-6))(net)
         net = layers.BatchNormalization()(net)
         net = layers.Activation("relu")(net)
+
+        net = layers.Flatten()(net)
 
         actions = layers.Dense(units=self.action_size, activation='softmax', name = 'actions')(net)
         

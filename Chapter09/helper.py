@@ -58,16 +58,20 @@ def getFullData(file):
     return datavec
 
 
-def getState(data, t, window):
+def getState(data, t, window, budgetHistory = []):
     if t - window >= -1:
         vec = data[t - window + 1:t + 1]
+        budget_vec = budgetHistory[t - window + 1:t + 1]
     else:
         vec = -(t-window+1)*[data[0]]+data[0: t + 1]
+        budget_vec = -(t-window+1)*[budgetHistory[0]]+budgetHistory[0: t + 1]
     scaled_state = []
+    budget_scaled_state = []
     for i in range(window - 1):
         scaled_state.append(1/(1 + math.exp(vec[i] - vec[i+1])))
+        budget_scaled_state.append(1/(1 + math.exp(round(budget_vec[i], 5) - round(budget_vec[i+1], 5))))
 
-    return np.array([scaled_state])
+    return np.array([scaled_state, budget_scaled_state]).reshape(1, 2, 50)
 
 
 def logValidationResults(logFile, results):
