@@ -178,7 +178,7 @@ def assembleFileName(name, format):
 
 def assembleValidationFileName(name, episodeNo, format):
     index = name.find(format)
-    filename = name[:index] + "_validation_{}".format(episodeNo) + format
+    filename = name[:index] + "_validation_{}".format(f'{episodeNo:03}') + format
     return filename
 
 
