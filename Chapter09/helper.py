@@ -156,7 +156,7 @@ def addResults(origContent, newContent):
 
 def getTimestamp():
     now = datetime.datetime.now()
-    time_now = now.strftime("%Y-%m-%d %H:%M:%S")
+    time_now = now.strftime("%Y-%m-%d %H_%M_%S")
     return time_now
 
 
