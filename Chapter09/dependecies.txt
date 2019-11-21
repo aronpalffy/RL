@@ -10,5 +10,7 @@ pip3 uninstall python-dateutil -y
 pip3 install python-dateutil
 pip3 install matplotlib
 
+pip3 install sklearn
+
 cd /workspace/RL/Chapter09
 python3 /workspace/RL/Chapter09/train.py
