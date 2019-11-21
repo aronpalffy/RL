@@ -93,7 +93,7 @@ def validate(episodeNo):
         elif action == 2 and len(agent.inventory) > 0:
             profit = 0
             for bought_price in agent.inventory:
-                reward += max(closePrice - bought_price, 0)
+                reward += closePrice - bought_price#, 0)
                 profit += closePrice - bought_price
             agent.inventory = [] # clear inventory, we sold everything
             total_profit += profit
@@ -183,7 +183,7 @@ for e in range(episode_count):
         elif action == 2 and len(agent.inventory) > 0:
             profit = 0
             for bought_price in agent.inventory:
-                reward += max(closePrice - bought_price, 0)
+                reward += closePrice - bought_price#, 0)
                 profit += closePrice - bought_price
             agent.inventory = [] # clear inventory, we sold everything
             total_profit += profit
@@ -251,7 +251,7 @@ for t in range(l_test):
 
     elif action == 2 and len(agent.inventory) > 0:
         bought_price = agent.inventory.pop(0)
-        reward = max(test_data[t] - bought_price, 0)
+        reward = test_data[t] - bought_price#, 0)
         total_profit += test_data[t] - bought_price
         logger.debug("Sell: " + formatPrice(test_data[t]) +
                      " | profit: " + formatPrice(test_data[t] - bought_price))
