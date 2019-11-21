@@ -35,7 +35,7 @@ logger.addHandler(file_handler)
 window_size = (2, 50)
 batch_size = 32
 startBudget = 100000
-episode_count = 1
+episode_count = 301
 validateEvery = 10
 
 agent = Agent(window_size, batch_size, startBudget)
