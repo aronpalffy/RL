@@ -41,8 +41,10 @@ validateEvery = 10
 agent = Agent(window_size, batch_size, startBudget)
 
 data = getStockData(trainingFile)
-fullData = getFullData(trainingFile)
+fullTrainingData = getFullData(trainingFile)
 
+validation_data = getStockData(validationFile)
+fullValidationData = getFullData(validationFile)
 
 # VALIDATION
 def validate(episodeNo):
@@ -52,8 +54,6 @@ def validate(episodeNo):
     #
     # TODO save model
     #
-    fullData = getFullData(validationFile)
-    validation_data = getStockData(validationFile)
     l_validation = len(validation_data) - 1
     total_profit = 0
     agent.inventory = []
@@ -72,7 +72,7 @@ def validate(episodeNo):
         next_state = getState(validation_data, t + 1, window_size[1] + 1, budgetHistory)
         reward = 0
 
-        validationDataRow = fullData[t]
+        validationDataRow = fullValidationData[t]
         #["Date", "Budget", "Buy/Sell", "Profit", "Reward"]
         validationResult = [validationDataRow.date, "", "", "", 0]
 
@@ -146,7 +146,7 @@ for e in range(episode_count):
 
         closePrice = data[t]
 
-        row = fullData[t]
+        row = fullTrainingData[t]
 
         budgetHistory.append(float(formatBudget(agent.budget)))
 
