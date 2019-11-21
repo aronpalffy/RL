@@ -35,7 +35,7 @@ logger.addHandler(file_handler)
 window_size = (2, 50)
 batch_size = 32
 startBudget = 100000
-episode_count = 301
+episode_count = 1
 validateEvery = 10
 
 agent = Agent(window_size, batch_size, startBudget)
@@ -77,6 +77,7 @@ def validate(episodeNo):
         validationResult = [validationDataRow.date, "", "", "", 0]
 
         closePrice = validation_data[t]
+        row = fullValidationData[t]
 
         if action == 1:
             if closePrice < agent.budget:
@@ -90,9 +91,11 @@ def validate(episodeNo):
                 logger.debug("Out of budget, terminating validation")
                 done = True
         elif action == 2 and len(agent.inventory) > 0:
-            bought_price = agent.inventory.pop(0)
-            reward = max(closePrice - bought_price, 0)
-            profit = closePrice - bought_price
+            profit = 0
+            for bought_price in agent.inventory:
+                reward += max(closePrice - bought_price, 0)
+                profit += closePrice - bought_price
+            agent.inventory = [] # clear inventory, we sold everything
             total_profit += profit
             agent.budget += profit
             validationResult[2] = "Sell"
@@ -178,9 +181,11 @@ for e in range(episode_count):
                     done = True
 
         elif action == 2 and len(agent.inventory) > 0:
-            bought_price = agent.inventory.pop(0)
-            reward = max(closePrice - bought_price, 0)
-            profit = closePrice - bought_price
+            profit = 0
+            for bought_price in agent.inventory:
+                reward += max(closePrice - bought_price, 0)
+                profit += closePrice - bought_price
+            agent.inventory = [] # clear inventory, we sold everything
             total_profit += profit
             agent.budget += profit
             #logger.debug("sell: " + formatPrice(closePrice) + "| profit: " + formatPrice(data[t] - bought_price))
@@ -212,7 +217,8 @@ for e in range(episode_count):
     durations.append(episodeDuration.total_seconds())
 if True:
     avgDuration = sum(durations) / len(durations)
-    # logger.debug("Avg episode Duration: ", str(avgDuration))
+    logger.debug("Avg episode Duration: {}".format(
+        str(avgDuration)))
     trainingEnd = datetime.datetime.now()
     totalTrainingDuration = trainingEnd-trainingStart
     logger.debug("Total training duration: {}".format(
