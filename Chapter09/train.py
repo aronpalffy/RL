@@ -34,9 +34,9 @@ logger.addHandler(file_handler)
 
 window_size = (2, 50)
 batch_size = 32
-startBudget = 10000
+startBudget = 100000
 episode_count = 301
-validateEvery = 20
+validateEvery = 10
 
 agent = Agent(window_size, batch_size, startBudget)
 
@@ -81,7 +81,7 @@ def validate(episodeNo):
         if action == 1:
             if closePrice < agent.budget:
                 agent.inventory.append(closePrice)
-                #agent.budget -= closePrice
+                agent.budget -= closePrice
                 validationResult[2] = "Buy"
                 #logger.debug("Buy: " + formatPrice(closePrice))
             elif(len(agent.inventory) == 0):
@@ -159,7 +159,7 @@ for e in range(episode_count):
         if action == 1:
             if closePrice < agent.budget:
                 agent.inventory.append(closePrice)
-                # agent.budget-=closePrice
+                agent.budget-=closePrice
                 # logger.debug("Buy. Price is " + formatPrice(closePrice)
                 #logger.debug("Buget is: " + formatPrice(agent.budget))
                 #logger.debug("day " + row.date)
