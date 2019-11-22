@@ -59,7 +59,7 @@ logger.addHandler(file_handler)
 
 window_size = 50
 batch_size = 32
-episode_count = 11
+episode_count = 301
 validateEvery = 10
 
 agent = Agent(window_size, batch_size)
@@ -83,7 +83,7 @@ def validate(episodeNo):
     l_validation = len(validation_data) - 1
     total_profit = 0
     agent.inventory = []
-    agent.is_eval = False
+    agent.is_eval = True
     done = False
     validationResults = []
 
