@@ -148,6 +148,7 @@ for e in range(episode_count):
     logger.debug("Episode " + str(e) + "/" + str(episode_count))
 
     agent.inventory = []
+    agent.is_eval = False
     total_profit = 0
     done = False
 

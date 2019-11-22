@@ -89,6 +89,7 @@ def createGraph(imageFile, trainingLog, validationLog):
 
 
 """
-createGraph("graph.png","training_log/2019-11-22_11-56-19/trainingResultsLog.log",
-            "training_log/2019-11-22_11-56-19/validationResultsLog.log")
+createGraph("graph.png",
+            "training_log/2019-11-22_17-03-53/trainingResultsLog.log",
+            "training_log/2019-11-22_17-03-53/validationResultsLog.log")
 """
