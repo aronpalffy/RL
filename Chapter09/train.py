@@ -89,7 +89,6 @@ def validate(episodeNo):
                 # nothing to sell
                 logger.debug("Date: " + row.date)
                 logger.debug("Out of budget, terminating validation")
-                reward = -999
                 done = True
         elif action == 2 and len(agent.inventory) > 0:
             profit = 0
@@ -179,7 +178,6 @@ for e in range(episode_count):
                     logger.debug("Date: " + row.date)
                     logger.debug("Out of budget, terminating episode")
                     failedEpisodes.append(e)
-                    reward = -999
                     done = True
 
         elif action == 2 and len(agent.inventory) > 0:
