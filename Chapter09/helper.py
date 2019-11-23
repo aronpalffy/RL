@@ -32,8 +32,8 @@ def formatPrice(n):
     return curr + "{0:.2f}".format(abs(n))
 
 
-def formatBudget(n):
-    return "{0:.2f}".format(abs(n))
+def formatNumber(n):
+    return "{0:.2f}".format(n)
 
 
 def getStockData(file):

@@ -81,6 +81,7 @@ def createGraph(imageFile, trainingLog, validationLog):
     plt.plot(x, y)
     plt.xticks(x, [str(i) for i in x], rotation=90)
     plt.tick_params(axis='x', which='major', labelsize=5)
+    plt.grid(axis='y')
 
     # show plot
     plt.tight_layout()

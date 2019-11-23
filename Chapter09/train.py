@@ -1,17 +1,20 @@
-from agent import Agent
-from helper import getStockData, getState, formatPrice, formatBudget, getFullData, logTrainingResults, logValidationResults, assembleFileName, assembleValidationFileName, createLogDirectory
-
-import numpy as np
-from data_row import DataRow
 import datetime
-
-from plot_log import createGraph
-
 import logging
 
+import numpy as np
+
+from agent import Agent
+from data_row import DataRow
+from helper import (assembleFileName, assembleValidationFileName,
+                    createLogDirectory, formatNumber, formatPrice, getFullData,
+                    getState, getStockData, logTrainingResults,
+                    logValidationResults)
+from plot_log import createGraph
+
 # setup files and names
-trainingFile = "data/2008_2016_^GSPC.csv"
-validationFile = "data/2017_^GSPC.csv"
+#trainingFile = "data/orig_training_14-08-2006-13-08-2015^GSPC.csv"
+trainingFile = "data/orig_training_14-08-2006-13-08-2015^GSPC.csv"
+validationFile = "data/orig_test_14-08-2015-14-08-2018^GSPC.csv"
 testFile = "data/2018_^GSPC Test.csv"
 
 logDirectory = createLogDirectory("training_log")
@@ -90,6 +93,8 @@ def validate(episodeNo):
     state = getState(validation_data, 0, window_size + 1)
     for t in range(l_validation):
         action = agent.act(state)
+        # TODO check if we need this?!
+        #action_prob = agent.actor_target.model.predict(state)
 
         next_state = getState(validation_data, t + 1,
                               window_size + 1)
@@ -100,7 +105,7 @@ def validate(episodeNo):
         validationResult = [validationDataRow.date, "", "", 0]
 
         closePrice = validation_data[t]
-        row = fullValidationData[t]
+        #row = fullValidationData[t]
 
         if action == 1:
             agent.inventory.append(closePrice)
@@ -113,7 +118,7 @@ def validate(episodeNo):
             profit = closePrice - bought_price
             total_profit += profit
             validationResult[1] = "Sell"
-            validationResult[2] = formatBudget(profit)
+            validationResult[2] = formatNumber(profit)
             validationResult[3] = reward
             # logger.debug("Sell: " + formatPrice(closePrice) +
             #   " | profit: " + formatPrice(closePrice - bought_price))
@@ -132,8 +137,9 @@ def validate(episodeNo):
             logger.debug("------------------------------------------")
             break  # break out of validation
 
-    validationRecord.info("Validation_{}    {}".format(
-        episodeNo, formatBudget(total_profit)))
+    validationRecord.info("V_{}    {}".format(
+        f'{episodeNo:03}', formatNumber(total_profit)))
+
 
 # TRAINING
 durations = []
@@ -201,11 +207,11 @@ for e in range(episode_count):
         trainingDuration))
     logger.debug("")
 
-    if e % validateEvery == 0:
-        validate(e)
+    #if e % validateEvery == 0:
+    #validate(e)
     durations.append(episodeDuration.total_seconds())
-    trainingRecord.info("Training_{}    {}".format(
-        e, formatBudget(total_profit)))
+    trainingRecord.info("T_{}    {}".format(
+        f'{e:03}', formatNumber(total_profit)))
 
 if True:
     avgDuration = sum(durations) / len(durations)
