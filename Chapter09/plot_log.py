@@ -2,6 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import string
 import math
+import numpy as np
 
 from itertools import chain, repeat, islice
 
@@ -54,6 +55,7 @@ def savePlot(file):
 #savePlot("training_log/2019-11-15 15:53:47_training.csv")
 
 def createGraph(imageFile, trainingLog, validationLog):
+    fig, axs = plt.subplots(2,1)
 
     # Plot Validation records
     with open(validationLog, 'r') as f:
@@ -61,36 +63,59 @@ def createGraph(imageFile, trainingLog, validationLog):
         x = [str(line.split()[0]) for line in lines]
         y = [float(line.split()[1]) for line in lines]
 
-
-    plt.subplot(211)
+    #plt.subplot(211)
     plt.title("Validation")
-    plt.grid(True)
-    plt.plot(x, y)
-    plt.xticks(x, [str(i) for i in x], rotation=90)
-    plt.tick_params(axis='x', which='major', labelsize=5)
+    axs[0].grid(axis='y')
+    axs[0].plot(x, y)
+    #axs[0].xticks(x, [str(i) for i in x], rotation=90)
+    axs[0].tick_params(axis='x', which='major', labelsize=1)
 
     # Plot Training records
     with open(trainingLog, 'r') as f:
         lines = f.readlines()
         x = [str(line.split()[0]) for line in lines]
         y = [float(line.split()[1]) for line in lines]
- 
-    plt.subplot(212)
-    plt.title("Training")
+        percentMatches = [float(line.split()[2]) for line in lines]
 
-    plt.plot(x, y)
-    plt.xticks(x, [str(i) for i in x], rotation=90)
-    plt.tick_params(axis='x', which='major', labelsize=5)
-    plt.grid(axis='y')
+    #plt.subplot(212)
+    plt.title("Training")
+    axs[1].plot(x, y)
+    color = 'tab:blue'
+    axs[1].set_xlabel('episodes')
+    axs[1].set_ylabel('profit', color=color)
+    axs[1].tick_params(axis='y', labelcolor=color)
+    axs[1].tick_params(axis='x', labelsize=5)
+
+    k = 10
+    ys = x[::k]
+    ys = np.append(ys, x[-1])
+    labels = x[::k]
+    labels = np.append(labels, x[-1])
+    plt.xticks(ys, labels, rotation=90)
+    
+    color = 'tab:red'
+    ax2 = axs[1].twinx()  # instantiate a second axes that shares the same x-axis
+    ax2.plot(x, percentMatches, lw=0.5, color=color)
+    ax2.set_ylabel('% match', color=color)
+    ax2.tick_params(axis='y', labelcolor=color)
+    ax2.tick_params(axis='x', labelsize=5)
+
+    axs[1].grid(axis='y')
+    k = 10
+    ys = x[::k]
+    ys = np.append(ys, x[-1])
+    labels = x[::k]
+    labels = np.append(labels, x[-1])
+    plt.xticks(ys, labels, rotation=90)
 
     # show plot
-    plt.tight_layout()
+    fig.tight_layout()
     #plt.show()
     plt.savefig(imageFile)
 
 
 """
 createGraph("graph.png",
-            "training_log/2019-11-22_17-03-53/trainingResultsLog.log",
-            "training_log/2019-11-22_17-03-53/validationResultsLog.log")
+            "training_log/2019-11-24_11-35-08/trainingResultsLog.log",
+            "training_log/2019-11-24_11-35-08/validationResultsLog.log")
 """

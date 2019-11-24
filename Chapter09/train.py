@@ -30,9 +30,9 @@ trainingResultsLogFile = logDirectory + \
 
 
 def setup_logger(name, log_file, level=logging.INFO):
-    """unctin setup as many loggers as you want"""
-
+    
     handler = logging.FileHandler(log_file)
+    # no formatter for these logs
     # handler.setFormatter(formatter)
 
     logger = logging.getLogger(name)
@@ -59,6 +59,7 @@ file_handler.setFormatter(formatter)
 
 # add file handler to logger
 logger.addHandler(file_handler)
+logger.addHandler(logging.StreamHandler())
 
 window_size = 50
 batch_size = 32
@@ -114,8 +115,8 @@ def validate(episodeNo):
         elif action == 2 and len(agent.inventory) > 0:
 
             bought_price = agent.inventory.pop(0)
-            reward = max(closePrice - bought_price, 0)
             profit = closePrice - bought_price
+            reward = max(profit, 0)
             total_profit += profit
             validationResult[1] = "Sell"
             validationResult[2] = formatNumber(profit)
@@ -153,6 +154,8 @@ for e in range(episode_count):
     logger.debug("*******************")
     logger.debug("Episode " + str(e) + "/" + str(episode_count))
 
+    actionMatchesPrediction = []
+
     agent.inventory = []
     agent.is_eval = False
     total_profit = 0
@@ -168,6 +171,10 @@ for e in range(episode_count):
 
         action = agent.act(state)
         action_prob = agent.actor_local.model.predict(state)
+        maximum = np.max(action_prob)
+        index_of_maximum = np.argmax(action_prob)
+        if action == index_of_maximum:
+            actionMatchesPrediction.append("{} {}".format(row.date, action))
 
         next_state = getState(data, t + 1, window_size + 1)
         reward = 0
@@ -180,8 +187,8 @@ for e in range(episode_count):
 
         elif action == 2 and len(agent.inventory) > 0:
             bought_price = agent.inventory.pop(0)
-            reward = max(closePrice - bought_price, 0)
             profit = closePrice - bought_price
+            reward = max(profit, 0)
             total_profit += profit
             #logger.debug("sell: " + formatPrice(closePrice) + "| profit: " + formatPrice(data[t] - bought_price))
 
@@ -205,13 +212,18 @@ for e in range(episode_count):
     logger.debug("episodeDuration {}".format(episodeDuration.total_seconds()))
     logger.debug("trainingDuration {}".format(
         trainingDuration))
+    matches = len(actionMatchesPrediction)
+    percent = matches/l*100
+    logger.debug(
+        "actions matching predicions {}/{} that is {}%".format(matches, l,
+        formatNumber(percent)))
     logger.debug("")
 
     #if e % validateEvery == 0:
     #validate(e)
     durations.append(episodeDuration.total_seconds())
-    trainingRecord.info("T_{}    {}".format(
-        f'{e:03}', formatNumber(total_profit)))
+    trainingRecord.info("T_{}    {}    {}".format(
+        f'{e:03}', formatNumber(total_profit),formatNumber(percent)))
 
 if True:
     avgDuration = sum(durations) / len(durations)
@@ -250,10 +262,11 @@ for t in range(l_test):
 
     elif action == 2 and len(agent.inventory) > 0:
         bought_price = agent.inventory.pop(0)
-        reward = max(test_data[t] - bought_price, 0)
-        total_profit += test_data[t] - bought_price
+        profit = test_data[t] - bought_price
+        reward = max(profit, 0)
+        total_profit += profit
         logger.debug("Sell: " + formatPrice(test_data[t]) +
-                     " | profit: " + formatPrice(test_data[t] - bought_price))
+                     " | profit: " + formatPrice(profit))
 
     if t == l_test - 1:
         done = True
