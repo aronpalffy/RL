@@ -35,8 +35,8 @@ class Agent:
         self.inventory = []
         self.is_eval = is_eval
         
-        self.gamma = 0.99
-        self.tau = 0.001
+        self.gamma = 0.99  # discount factor
+        self.tau = 0.001  # for soft update of target parameters
         
         self.actor_local = Actor(self.state_size, self.action_size)
         self.actor_target = Actor(self.state_size, self.action_size)    
@@ -68,14 +68,19 @@ class Agent:
         dones = np.array([e.done for e in experiences if e is not None]).astype(np.float32).reshape(-1,1)
         next_states = np.vstack([e.next_state for e in experiences if e is not None]).astype(np.float32).reshape(-1,self.state_size)
 
+        # update critic
+        ## get predicted next-state actions and Q values from target models
         actions_next = self.actor_target.model.predict_on_batch(next_states)
         Q_targets_next = self.critic_target.model.predict_on_batch([next_states, actions_next])
-        
+        # compute Q targets for current states
         Q_targets = rewards + self.gamma * Q_targets_next * (1 - dones)
+        
         self.critic_local.model.train_on_batch(x = [states, actions], y=Q_targets)
         
         action_gradients = np.reshape(self.critic_local.get_action_gradients([states, actions, 0]),(-1, self.action_size))
         self.actor_local.train_fn([states, action_gradients, 1])
+ 
+        # update target networks
         self.soft_update(self.critic_local.model, self.critic_target.model)  
         self.soft_update(self.actor_local.model, self.actor_target.model)
 

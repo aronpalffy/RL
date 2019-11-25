@@ -1,6 +1,9 @@
 from keras import layers, models, optimizers
 from keras import backend as K
 
+LR_ACTOR = .00001 # learning rate of actor
+# fuzz factor
+EPSILON = 0.001  # K.epsion() defaults to 1e-07 (0.0000001)
 
 class Actor:
     
@@ -31,7 +34,7 @@ class Actor:
         action_gradients = layers.Input(shape=(self.action_size,))
         loss = K.mean(-action_gradients * actions)
 
-        optimizer = optimizers.Adam(lr=.00001)
+        optimizer = optimizers.Adam(lr=LR_ACTOR,epsilon=EPSILON)
         updates_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
         self.train_fn = K.function(
             inputs=[self.model.input, action_gradients, K.learning_phase()],

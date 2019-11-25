@@ -1,9 +1,13 @@
 from keras import layers, models, optimizers
 from keras import backend as K
 
+LR_CRITIC = 0.001 # learning rate of critic
+# fuzz factor
+EPSILON = 0.001  # K.epsion() defaults to 1e-07 (0.0000001)
 
 class Critic:
     """Critic (Value) Model."""
+
 
     def __init__(self, state_size, action_size):
         """Initialize parameters and build model.
@@ -38,7 +42,7 @@ class Critic:
 
         self.model = models.Model(inputs=[states, actions], outputs=Q_values)
 
-        optimizer = optimizers.Adam(lr=0.001)
+        optimizer = optimizers.Adam(lr=LR_CRITIC,epsilon=EPSILON)
         self.model.compile(optimizer=optimizer, loss='mse')
 
         action_gradients = K.gradients(Q_values, actions)
