@@ -171,6 +171,11 @@ for e in range(episode_count):
 
         action = agent.act(state)
         action_prob = agent.actor_local.model.predict(state)
+        """
+        action_prob_actor_target = agent.actor_target.model.predict(state)
+        action_prob_critic_local = agent.critic_local.model.predict(state)
+        action_prob_critic_target = agent.critic_target.model.predict(state)
+        """
         maximum = np.max(action_prob)
         index_of_maximum = np.argmax(action_prob)
         if action == index_of_maximum:
@@ -217,6 +222,7 @@ for e in range(episode_count):
     logger.debug(
         "actions matching predicions {}/{} that is {}%".format(matches, l,
         formatNumber(percent)))
+    logger.debug("current value of agent.epsilon: {}".format(agent.epsilon))
     logger.debug("")
 
     #if e % validateEvery == 0:

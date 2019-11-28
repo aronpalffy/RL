@@ -1,7 +1,7 @@
 from keras import layers, models, optimizers
 from keras import backend as K
 
-LR_ACTOR = .00001 # learning rate of actor
+LR_ACTOR = .0001 # learning rate of actor
 # fuzz factor
 EPSILON = 0.001  # K.epsion() defaults to 1e-07 (0.0000001)
 
