@@ -37,6 +37,20 @@ class Agent:
         
         self.gamma = 0.99  # discount factor
         self.tau = 0.001  # for soft update of target parameters
+
+        self.epsilon = 1.0
+        self.epsion_min = 0.01
+        """
+        self.epsilon_decay = 0.999999 with this setting
+        epsilon decays to 0.5057234296206272 in 301 epizodes of training
+        on orig_training_14-08-2006-13-08-2015^GSPC 
+        """
+        """
+        self.epsilon_decay = 0.99999 with this setting
+        epsilon decays to 0.009999971601096055 in 301 epizodes of training
+        on orig_training_14-08-2006-13-08-2015^GSPC 
+        """
+        self.epsilon_decay = 0.999995
         
         self.actor_local = Actor(self.state_size, self.action_size)
         self.actor_target = Actor(self.state_size, self.action_size)    
@@ -50,7 +64,7 @@ class Agent:
     def act(self, state):
         options = self.actor_local.model.predict(state)
         self.last_state = state
-        if not self.is_eval:
+        if not self.is_eval and random.random() <= self.epsilon:
             return choice(range(3), p = options[0])
         return np.argmax(options[0])
     
@@ -60,6 +74,8 @@ class Agent:
             experiences = self.memory.sample(self.batch_size)
             self.learn(experiences)
             self.last_state = next_state
+        if self.epsilon > self.epsion_min:
+            self.epsilon*=self.epsilon_decay
 
     def learn(self, experiences):               
         states = np.vstack([e.state for e in experiences if e is not None]).astype(np.float32).reshape(-1,self.state_size)    
