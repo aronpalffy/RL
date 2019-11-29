@@ -61,12 +61,45 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 logger.addHandler(logging.StreamHandler())
 
+""" PARAMETERS """
+
+LR_ACTOR = 0.0001 # learning rate of actor
+LR_CRITIC = 0.001 # learning rate of critic
+# fuzz factor
+OPTIMIZER_EPSILON = 0.001  # K.epsion() defaults to 1e-07 (0.0000001)
+
+EPSILON = 1.0
+EPSILON_MIN = 0.01
+EPSILON_DECAY = 0.999995
+"""
+self.epsilon_decay = 0.999999 with this setting
+epsilon decays to 0.5057234296206272 in 301 epizodes of training
+on orig_training_14-08-2006-13-08-2015^GSPC 
+"""
+"""
+self.epsilon_decay = 0.99999 with this setting
+epsilon decays to 0.009999971601096055 in 301 epizodes of training
+on orig_training_14-08-2006-13-08-2015^GSPC 
+"""
+IS_EVAL = False
+
 window_size = 50
 batch_size = 32
 episode_count = 301
 validateEvery = 10
 
-agent = Agent(window_size, batch_size)
+agent = Agent(window_size, batch_size, IS_EVAL, EPSILON, EPSILON_MIN,
+              EPSILON_DECAY, LR_ACTOR, LR_CRITIC, OPTIMIZER_EPSILON)
+
+logger.debug("The following paramters are used for this training")
+logger.debug("window_size = {}".format(window_size))
+logger.debug("batch_size = {}".format(batch_size))
+logger.debug("EPSILON = {}".format(EPSILON))
+logger.debug("EPSILON_MIN = {}".format(EPSILON_MIN))
+logger.debug("EPSILON_DECAY = {}".format(EPSILON_DECAY))
+logger.debug("LR_ACTOR = {}".format(LR_ACTOR))
+logger.debug("LR_CRITIC = {}".format(LR_CRITIC))
+logger.debug("OPTIMIZER_EPSILON = {}".format(OPTIMIZER_EPSILON))
 
 data = getStockData(trainingFile)
 fullTrainingData = getFullData(trainingFile)

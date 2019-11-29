@@ -1,41 +1,43 @@
 from keras import layers, models, optimizers
 from keras import backend as K
 
-LR_ACTOR = .0001 # learning rate of actor
-# fuzz factor
-EPSILON = 0.001  # K.epsion() defaults to 1e-07 (0.0000001)
 
 class Actor:
-    
-    
-  # """Actor (policy) Model. """
 
-    def __init__(self, state_size, action_size):
+    # """Actor (policy) Model. """
+
+    def __init__(self, state_size, action_size,
+                 learning_rate=0.0001, optimizer_epsilon=K.epsilon()):
 
         self.state_size = state_size
         self.action_size = action_size
 
-        self.build_model()
+        self.build_model(learning_rate, optimizer_epsilon)
 
-    def build_model(self):
+    def build_model(self, learning_rate, optimizer_epsilon):
         states = layers.Input(shape=(self.state_size,), name='states')
-        
-        net = layers.Dense(units=16,kernel_regularizer=layers.regularizers.l2(1e-6))(states)
+
+        net = layers.Dense(
+            units=16, kernel_regularizer=layers.regularizers.l2(1e-6))(states)
         net = layers.BatchNormalization()(net)
         net = layers.Activation("relu")(net)
-        net = layers.Dense(units=32,kernel_regularizer=layers.regularizers.l2(1e-6))(net)
+        net = layers.Dense(
+            units=32, kernel_regularizer=layers.regularizers.l2(1e-6))(net)
         net = layers.BatchNormalization()(net)
         net = layers.Activation("relu")(net)
 
-        actions = layers.Dense(units=self.action_size, activation='softmax', name = 'actions')(net)
-        
+        actions = layers.Dense(units=self.action_size,
+                               activation='softmax', name='actions')(net)
+
         self.model = models.Model(inputs=states, outputs=actions)
 
         action_gradients = layers.Input(shape=(self.action_size,))
         loss = K.mean(-action_gradients * actions)
 
-        optimizer = optimizers.Adam(lr=LR_ACTOR,epsilon=EPSILON)
-        updates_op = optimizer.get_updates(params=self.model.trainable_weights, loss=loss)
+        optimizer = optimizers.Adam(
+            lr=learning_rate, epsilon=optimizer_epsilon)
+        updates_op = optimizer.get_updates(
+            params=self.model.trainable_weights, loss=loss)
         self.train_fn = K.function(
             inputs=[self.model.input, action_gradients, K.learning_phase()],
             outputs=[],
