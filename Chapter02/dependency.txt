@@ -1,0 +1,2 @@
+# for centos without opengl
+sudo yum install freeglut-devel
