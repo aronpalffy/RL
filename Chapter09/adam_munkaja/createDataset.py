@@ -1,12 +1,16 @@
 import csv
 import datetime
 import pandas as pd
+from pandas.plotting import register_matplotlib_converters
 import matplotlib.pyplot as plt
 from scipy import stats
 
+import statsmodels.tsa.api as smt
+from statsmodels.tsa.api import VAR
+
 thisdict = {}
 
-file = open('D:\Downloads\Gold.csv')
+file = open('Chapter09/adam_munkaja/GOLD.csv')
 reader = csv.reader(file, delimiter=',')
 for row in reader:
     # print(row[0])
@@ -23,7 +27,7 @@ for row in reader:
 dfGold = pd.DataFrame.from_dict(thisdict, orient='index').astype(float)
 thisdict = {}
 
-file = open('D:\Downloads\Silver.csv')
+file = open('Chapter09/adam_munkaja/Silver.csv')
 reader = csv.reader(file, delimiter=';')
 for row in reader:
     # print(row[0].split(", ")[0])
@@ -40,7 +44,7 @@ for row in reader:
 dfSilver = pd.DataFrame.from_dict(thisdict, orient='index').astype(float)
 thisdict = {}
 
-file = open('D:\Downloads\Oil_Filtered.csv')
+file = open('Chapter09/adam_munkaja/Oil_Filtered.csv')
 reader = csv.reader(file, delimiter=',')
 for row in reader:
     date_time_obj = datetime.datetime.strptime(row[0], '%Y-%m-%d')
@@ -53,7 +57,7 @@ dfOil = pd.DataFrame.from_dict(thisdict, orient='index').replace(to_replace ="."
                  value ="0").astype(float)
 thisdict = {}
 
-file = open('D:\\Downloads\\USD_EUR.csv')
+file = open('Chapter09/adam_munkaja/USD_EUR.csv')
 reader = csv.reader(file, delimiter=';')
 for row in reader:
     # print(row[0].split(", ")[0])
@@ -64,8 +68,8 @@ for row in reader:
     price = usderurrow[2].replace('"', '')
     # print(price)
     # row = row.replace('ď»ż', '').replace('Â·', '.')
-    datestring = (usderurrow[0] + usderurrow[1]).replace('ď»ż"', '').replace('Â·', '.')
-    # print(datestring)
+    datestring = (usderurrow[0] + usderurrow[1]).replace('ď»ż"', '').replace('Â·', '.').replace('"', '').replace('\ufeff', '')
+    #print(datestring)
     date_time_obj = datetime.datetime.strptime(datestring, '%m %d %Y')
     # for column in row:
     if date_time_obj in thisdict:
@@ -76,11 +80,13 @@ for row in reader:
 dfUsdEur = pd.DataFrame.from_dict(thisdict, orient='index').astype(float)
 thisdict = {}
 
-file = open('D:\Downloads\Rate.csv')
+file = open('Chapter09/adam_munkaja/Rate.csv')
 reader = csv.reader(file, delimiter=',')
 for row in reader:
-    row = row[0].replace('ď»ż', '').replace('Â·', '.')
+    row = row[0].replace('ď»ż', '').replace('Â·', '.').replace('\ufeff', '').replace('·', '.')
+    #date_time_obj = datetime.datetime.strptime(row[:11].lstrip(), '%Y %m %d')
     date_time_obj = datetime.datetime.strptime(row[:11].lstrip(), '%Y %m %d')
+    #print(date_time_obj)
     if date_time_obj in thisdict:
         thisdict[date_time_obj] = thisdict.get(date_time_obj) + "; " + row[-4:].lstrip()
     else:
@@ -89,7 +95,7 @@ for row in reader:
 dfRate = pd.DataFrame.from_dict(thisdict, orient='index').astype(float)
 thisdict = {}
 
-file = open('D:\Downloads\GSPC_X.csv')
+file = open('Chapter09/adam_munkaja/GSPC_X.csv')
 reader = csv.reader(file, delimiter=',')
 for row in reader:
     # print(row[0])
@@ -124,7 +130,6 @@ print(dataset.isnull().sum())
 
 # dataset = dataset.T
 
-from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 # Plot
 fig, axes = plt.subplots(nrows=3, ncols=2, dpi=120, figsize=(10,6))
@@ -137,8 +142,9 @@ for i, ax in enumerate(axes.flatten()):
      ax.yaxis.set_ticks_position('none')
      ax.spines["top"].set_alpha(0)
      ax.tick_params(labelsize=6)
-plt.tight_layout();
-plt.show()
+plt.tight_layout()
+#plt.show()
+plt.savefig("Chapter09/adam_munkaja/data.png")
 
 
 
@@ -201,8 +207,6 @@ print(transform_data.describe())
 # TODO Stationarity check
 # TODO Stationarity check
 
-import statsmodels.tsa.api as smt
-from statsmodels.tsa.api import VAR
 mod = smt.VAR(transform_data)
 res = mod.fit(maxlags=15, ic='aic')
 print(res.summary())
@@ -214,7 +218,7 @@ pred_df = pd.DataFrame(pred, index=dataset.index[-15:], columns=dataset.columns)
 print(pred_df)
 
 pred_inverse = pred_df.cumsum()
-f = pred_inverse #+ X_test.shift(-1)
+f = pred_inverse + X_test#.shift(1)
 print(f)
 #
 # pred_inverse = pred_df.cumsum()
@@ -234,7 +238,8 @@ ax2 = f.Gold.plot(color='red', grid = True, label = 'Predicted', secondary_y = T
 ax1.legend(loc=1)
 ax2.legend(loc=2)
 plt.title = ('Predicted vs Real')
-plt.show()
+#plt.show()
+plt.savefig("Chapter09/adam_munkaja/Predicted vs Real_1.png")
 
 plt.figure(figsize=(12, 5))
 plt.xlabel("Date")
@@ -245,4 +250,5 @@ ax2 = f.Oil.plot(color='red', grid = True, label = 'Predicted', secondary_y = Tr
 ax1.legend(loc=1)
 ax2.legend(loc=2)
 plt.title = ('Predicted vs Real')
-plt.show()
+#plt.show()
+plt.savefig("Chapter09/adam_munkaja/Predicted vs Real_2.png")
