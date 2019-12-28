@@ -59,7 +59,8 @@ ENV TF_NEED_CUDA=0 \
  TF_NEED_GCP=0 \
  TF_NEED_HDFS=0 \
  TF_ENABLE_XLA=0 \
- TF_NEED_OPENCL=0
+ TF_NEED_OPENCL=0 \
+ CC=/usr/bin/gcc-4.8
 
 #RUN cd /home/gitpod/tensorflow/ && ./configure \
 # && bazel build -c opt --copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-mfpmath=both -k //tensorflow/tools/pip_package:build_pip_package \
