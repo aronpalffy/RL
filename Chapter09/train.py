@@ -63,7 +63,7 @@ def validate(episodeNo):
     agent.is_eval = False
     done = False
     validationResults = []
-    for t in range(l_validation):
+    for t in tqdm(range(l_validation), desc="Validation Episode {}".format(f'{episodeNo:03}')):
         action = agent.act(state)
 
         next_state = getState(validation_data, t + 1, window_size + 1)
@@ -121,7 +121,7 @@ l = len(data) - 1
 
 # begin training
 trainingStart = datetime.datetime.now()
-for e in tqdm(range(episode_count)):
+for e in tqdm(range(episode_count), desc="Training Episodes"):
     episodeStart = datetime.datetime.now()
     logger.debug("*******************")
     logger.debug("Episode " + str(e) + "/" + str(episode_count))
@@ -136,7 +136,7 @@ for e in tqdm(range(episode_count)):
     budgetHistory = []
     priceHistory = []
 
-    for t in tqdm(range(l)):
+    for t in tqdm(range(l), desc="Training Episode {}".format(f'{e:03}')):
 
         closePrice = data[t]
 
