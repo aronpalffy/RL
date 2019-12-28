@@ -15,6 +15,13 @@ RUN pip3 install -U --user pip six numpy wheel setuptools mock 'future>=0.17.1' 
 # Version	        Python version  Compiler    Build tools
 # tensorflow-1.14.0 2.7, 3.3-3.7    GCC 4.8	    Bazel 0.24.1
 
+# change compiler to GCC 4.8
+RUN sudo update-alternatives --remove-all gcc \
+ && sudo update-alternatives --remove-all g++
+
+RUN sudo apt-get install gcc-4.8 -y
+
+# bazel related
 RUN sudo apt-get install pkg-config zip g++ zlib1g-dev unzip python
 
 RUN wget https://github.com/bazelbuild/bazel/releases/download/0.24.1/bazel-0.24.1-installer-linux-x86_64.sh
