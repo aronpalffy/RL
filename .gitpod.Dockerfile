@@ -27,3 +27,15 @@ RUN ./bazel-0.24.1-installer-linux-x86_64.sh --user
 RUN git clone https://github.com/tensorflow/tensorflow.git \
  && cd tensorflow \
  && git checkout v1.14.0
+
+# install pip3 dependencies
+RUN pip3 install keras==2.2.4 \
+ && pip3 uninstall six -y \
+ && pip3 install six \
+ && pip3 uninstall wrapt -y \
+ && pip3 install wrapt \
+ && pip3 uninstall python-dateutil -y \
+ && pip3 install python-dateutil \
+ && pip3 install matplotlib \
+ && pip3 install tqdm \
+ && pip3 install tensorflow==1.14.0
