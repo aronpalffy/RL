@@ -22,6 +22,7 @@ RUN sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ bionic uni
 RUN sudo apt-get update -y
 RUN sudo apt install gcc-4.8 g++-4.8 -y
 
+RUN which gcc
 RUN sudo update-alternatives --query gcc
 
 RUN update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50
