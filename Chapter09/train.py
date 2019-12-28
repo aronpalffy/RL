@@ -6,6 +6,7 @@ from data_row import DataRow
 import datetime
 
 import logging
+from tqdm import tqdm
 
 # setup files and names
 trainingFile = "data/2008_2016_^GSPC.csv"
@@ -120,7 +121,7 @@ l = len(data) - 1
 
 # begin training
 trainingStart = datetime.datetime.now()
-for e in range(episode_count):
+for e in tqdm(range(episode_count)):
     episodeStart = datetime.datetime.now()
     logger.debug("*******************")
     logger.debug("Episode " + str(e) + "/" + str(episode_count))
@@ -135,7 +136,7 @@ for e in range(episode_count):
     budgetHistory = []
     priceHistory = []
 
-    for t in range(l):
+    for t in tqdm(range(l)):
 
         closePrice = data[t]
 
