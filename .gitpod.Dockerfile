@@ -45,7 +45,7 @@ RUN git clone https://github.com/tensorflow/tensorflow.git \
  && cd tensorflow \
  && git checkout v1.14.0
 
-ENV TF_NEED_CUDA=1 \
+ENV TF_NEED_CUDA=0 \
  GCC_HOST_COMPILER_PATH=/usr/bin/gcc-4.8 \
  TF_CUDA_VERSION=8.0 \
  CUDA_TOOLKIT_PATH=/usr/local/cuda \
