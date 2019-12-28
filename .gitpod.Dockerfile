@@ -3,7 +3,7 @@ FROM gitpod/workspace-full
 USER gitpod
 
 # Install Python and the TensorFlow package dependencies
-RUN sudo install python3-dev python3-pip -y
+RUN sudo install python3-dev python3-pip
 
 # Install the TensorFlow pip package dependencies
 RUN pip3 install -U --user pip six numpy wheel setuptools mock 'future>=0.17.1' \
