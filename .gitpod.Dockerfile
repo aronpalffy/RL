@@ -22,10 +22,12 @@ RUN sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ bionic uni
 RUN sudo apt-get update -y
 RUN sudo apt-get install gcc-4.8 g++-4.8 -y
 
-RUN alias gcc='gcc-4.8' \
- && alias cc='gcc-4.8' \
- && alias g++='g++-4.8' \
- && alias c++='c++-4.8'
+RUN cd /usr/bin \
+ && sudo rm cc gcc c++ g++ \
+ && sudo ln -s /usr/local/bin/gcc-4.8 cc \
+ && sudo ln -s /usr/local/bin/gcc-4.8 gcc \
+ && sudo ln -s /usr/local/bin/c++-4.8 c++ \
+ && sudo ln -s /usr/local/bin/g++-4.8 g++ 
 
 # bazel related
 RUN sudo apt-get install pkg-config zip zlib1g-dev unzip python -y
