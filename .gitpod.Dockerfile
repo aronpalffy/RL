@@ -61,9 +61,9 @@ ENV TF_NEED_CUDA=1 \
  TF_ENABLE_XLA=0 \
  TF_NEED_OPENCL=0
 
-RUN cd /home/gitpod/tensorflow/ && ./configure \
- && bazel build -c opt --copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-mfpmath=both -k //tensorflow/tools/pip_package:build_pip_package \
- && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
+#RUN cd /home/gitpod/tensorflow/ && ./configure \
+# && bazel build -c opt --copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-mfpmath=both -k //tensorflow/tools/pip_package:build_pip_package \
+# && ./bazel-bin/tensorflow/tools/pip_package/build_pip_package /tmp/tensorflow_pkg
 
 
 # install pip3 dependencies
