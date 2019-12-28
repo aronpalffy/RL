@@ -24,10 +24,10 @@ RUN sudo apt-get install gcc-4.8 g++-4.8 -y
 
 RUN cd /usr/bin \
  # && sudo rm cc gcc c++ g++ \
- && sudo ln -s /usr/local/bin/gcc-4.8 cc \
- && sudo ln -s /usr/local/bin/gcc-4.8 gcc \
- && sudo ln -s /usr/local/bin/c++-4.8 c++ \
- && sudo ln -s /usr/local/bin/g++-4.8 g++ 
+ && ln -s /usr/local/bin/gcc-4.8 cc \
+ && ln -s /usr/local/bin/gcc-4.8 gcc \
+ && ln -s /usr/local/bin/c++-4.8 c++ \
+ && ln -s /usr/local/bin/g++-4.8 g++ 
 
  RUN echo "PATH=\"/usr/local/bin:$PATH\"" >> ~/.bash_profile
 
