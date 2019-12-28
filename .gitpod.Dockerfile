@@ -38,7 +38,7 @@ RUN wget https://github.com/bazelbuild/bazel/releases/download/0.24.1/bazel-0.24
 
 RUN chmod +x bazel-0.24.1-installer-linux-x86_64.sh
 
-RUN ./bazel-0.24.1-installer-linux-x86_64.sh --user
+RUN ./bazel-0.24.1-installer-linux-x86_64.sh
 
 # Download the TensorFlow source code
 RUN git clone https://github.com/tensorflow/tensorflow.git \
