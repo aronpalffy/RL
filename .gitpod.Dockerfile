@@ -17,9 +17,13 @@ RUN pip3 install -U --user pip six numpy wheel setuptools mock 'future>=0.17.1' 
 
 # change compiler to GCC 4.8
 #RUN sudo update-alternatives --remove-all gcc \
-# && sudo update-alternatives --remove-all g++ 
+# && sudo update-alternatives --remove-all g++
 
-RUN sudo apt-get install gcc-4.8 -y
+RUN sudo apt-get install python-software-properties
+RUN sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+RUN sudo apt-get update
+RUN sudo apt-get install gcc-4.8
+RUN sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.8 50
 
 # bazel related
 RUN sudo apt-get install pkg-config zip g++ zlib1g-dev unzip python
