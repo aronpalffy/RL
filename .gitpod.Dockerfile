@@ -11,14 +11,17 @@ RUN pip3 install -U --user pip six numpy wheel setuptools mock 'future>=0.17.1' 
  && pip3 install -U --user keras_preprocessing --no-deps
 
 # Install Bazel
-RUN sudo apt install curl \
- && curl https://bazel.build/bazel-release.pub.gpg | sudo apt-key add - \
- && echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | sudo tee /etc/apt/sources.list.d/bazel.list
-
 # install v0.24.1 
 # Version	        Python version  Compiler    Build tools
 # tensorflow-1.14.0 2.7, 3.3-3.7    GCC 4.8	    Bazel 0.24.1
-RUN sudo apt update && sudo apt install bazel-0.24.1
+
+RUN sudo apt-get install pkg-config zip g++ zlib1g-dev unzip python
+
+RUN wget https://github.com/bazelbuild/bazel/releases/download/0.24.1/bazel-0.24.1-installer-linux-x86_64.sh
+
+RUN chmod +x bazel-0.24.1-installer-linux-x86_64.sh
+
+RUN ./bazel-<version>-installer-linux-x86_64.sh --user
 
 # Download the TensorFlow source code
 RUN git clone https://github.com/tensorflow/tensorflow.git \
