@@ -19,7 +19,8 @@ RUN pip3 install -U --user pip six numpy wheel setuptools mock 'future>=0.17.1' 
 #RUN sudo update-alternatives --remove-all gcc \
 # && sudo update-alternatives --remove-all g++
 
-RUN sudo apt-get install python-software-properties
+RUN sudo apt-get install software-properties-common
+#RUN sudo apt-get install python-software-properties
 RUN sudo add-apt-repository ppa:ubuntu-toolchain-r/test
 RUN sudo apt-get update
 RUN sudo apt-get install gcc-4.8
