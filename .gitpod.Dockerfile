@@ -37,5 +37,5 @@ RUN pip3 install keras==2.2.4 \
  && pip3 uninstall python-dateutil -y \
  && pip3 install python-dateutil \
  && pip3 install matplotlib \
- && pip3 install tqdm \
+ && pip3 install numpy \
  && pip3 install tensorflow==1.14.0
