@@ -23,7 +23,7 @@ RUN sudo apt-get update -y
 RUN sudo apt-get install gcc-4.8 g++-4.8 -y
 
 RUN cd /usr/bin \
- && sudo rm cc gcc c++ g++ \
+ # && sudo rm cc gcc c++ g++ \
  && sudo ln -s /usr/local/bin/gcc-4.8 cc \
  && sudo ln -s /usr/local/bin/gcc-4.8 gcc \
  && sudo ln -s /usr/local/bin/c++-4.8 c++ \
