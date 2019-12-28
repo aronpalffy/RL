@@ -23,7 +23,7 @@ RUN sudo apt-get update -y
 RUN sudo apt install gcc-4.8 g++-4.8 -y
 
 # bazel related
-RUN sudo apt-get install pkg-config zip g++ zlib1g-dev unzip python
+RUN sudo apt-get install pkg-config zip zlib1g-dev unzip python -y
 
 RUN wget https://github.com/bazelbuild/bazel/releases/download/0.24.1/bazel-0.24.1-installer-linux-x86_64.sh
 
