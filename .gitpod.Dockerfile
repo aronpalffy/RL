@@ -17,7 +17,7 @@ RUN pip3 install -U --user pip six numpy wheel setuptools mock 'future>=0.17.1' 
 
 # change compiler to GCC 4.8
 #RUN sudo update-alternatives --remove-all gcc \
-# && sudo update-alternatives --remove-all g++
+# && sudo update-alternatives --remove-all g++ 
 
 RUN sudo apt-get install gcc-4.8 -y
 
