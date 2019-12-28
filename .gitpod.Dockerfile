@@ -18,7 +18,7 @@ RUN pip3 install -U --user pip six numpy wheel setuptools mock 'future>=0.17.1' 
 # change compiler to GCC 4.8
 RUN sudo apt remove gcc gcc-8 g++ g++-8 -y
 
-RUN sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ bionic main'
+RUN sudo add-apt-repository 'deb http://us.archive.ubuntu.com/ubuntu/ bionic universe'
 RUN sudo apt-get update -y
 RUN sudo apt install gcc-4.8 g++-4.8 -y
 
