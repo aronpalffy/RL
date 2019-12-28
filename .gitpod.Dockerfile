@@ -38,7 +38,7 @@ RUN wget https://github.com/bazelbuild/bazel/releases/download/0.24.1/bazel-0.24
 
 RUN chmod +x bazel-0.24.1-installer-linux-x86_64.sh
 
-RUN ./bazel-0.24.1-installer-linux-x86_64.sh
+RUN ./bazel-0.24.1-installer-linux-x86_64.sh --user
 
 # Download the TensorFlow source code
 RUN git clone https://github.com/tensorflow/tensorflow.git \
@@ -83,4 +83,4 @@ RUN pip3 install keras==2.2.4 \
 RUN pip3 install numpy \
  && cd /home/gitpod/tensorflow/ \
  && yes '' | ./configure \
- && bazel build -c opt --copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-mfpmath=both -k //tensorflow/tools/pip_package:build_pip_package --local_resources 50000,32,1.0
+ && /home/gitpod/bin/bazel build -c opt --copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-mfpmath=both -k //tensorflow/tools/pip_package:build_pip_package --local_resources 50000,32,1.0
