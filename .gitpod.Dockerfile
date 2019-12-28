@@ -29,6 +29,8 @@ RUN cd /usr/bin \
  && sudo ln -s /usr/local/bin/c++-4.8 c++ \
  && sudo ln -s /usr/local/bin/g++-4.8 g++ 
 
+ RUN echo "PATH=\"/usr/local/bin:$PATH\"" >> ~/.bash_profile
+
 # bazel related
 RUN sudo apt-get install pkg-config zip zlib1g-dev unzip python -y
 
