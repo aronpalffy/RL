@@ -26,4 +26,4 @@ RUN ./bazel-0.24.1-installer-linux-x86_64.sh --user
 # Download the TensorFlow source code
 RUN git clone https://github.com/tensorflow/tensorflow.git \
  && cd tensorflow \
- && git checkout r1.14.0
+ && git checkout v1.14.0
