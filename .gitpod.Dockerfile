@@ -80,8 +80,8 @@ RUN pip3 install keras==2.2.4 \
  #&& pip3 install tensorflow==1.14.0
 
 
-RUN pip3 install numpy \
- && cd /home/gitpod/tensorflow/ \
- && yes '' | ./configure \
- && /home/gitpod/bin/bazel build -c opt --copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-mfpmath=both -k //tensorflow/tools/pip_package:build_pip_package 
- #--local_resources 50000,32,1.0
+# RUN pip3 install numpy \
+# && cd /home/gitpod/tensorflow/ \
+# && yes '' | ./configure \
+# && /home/gitpod/bin/bazel build -c opt --copt=-mavx --copt=-mavx2 --copt=-mfma --copt=-mfpmath=both -k //tensorflow/tools/pip_package:build_pip_package 
+# #--local_resources 50000,32,1.0
